@@ -102,7 +102,7 @@ def save_tasks(tasks):
 
 def table_ify(tasks, divide_every=0):
     getters = [lambda t:t.id, lambda t:t.text, lambda t:t.tags, lambda t:t.priority]
-    labels = ['ID', 'Task', 'tags', 'Priority']
+    labels = ['ID', 'Task', 'Tags', 'Priority']
     lengths = [max(max(len(getter(t)) for t in tasks), len(label)) for getter, label in zip(getters, labels)]
     
     table  = '\n\n'
@@ -130,10 +130,10 @@ def table_ify(tasks, divide_every=0):
                 table += ''.ljust(length, '─') + ending
     # bottom boarder
     table += '╙'
-    for length, ending in zip(lengths, ['┴', '┴', '┴', '╜']):
+    for length, ending in zip(lengths, ['┴', '┴', '┴', '╜\n']):
         table += ''.ljust(length, '─') + ending
 
-    return table + '\n'
+    return table
 
 
 if __name__ == '__main__':
