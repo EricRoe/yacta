@@ -97,27 +97,37 @@ def save_tasks(tasks):
         with open(store, 'wb') as f:
             pickle.dump(tasks, f)
     except Exception as e:
+        print("The following error occured while attempting to save your data.")
+        print("Changes may not have been saved.")
+        print()
         print(e)
 
 
+def make_row(start, lengths, fill_char, section_endings, end='\n'):
+    row = start
+    for length, ending in zip(lengths, section_endings):
+        row += ''.ljust(length, fill_char) + ending
+    return row + end
+
+
 def table_ify(tasks, divide_every=0):
+    # there should be a more elegant method than using lambdas
     getters = [lambda t:t.id, lambda t:t.text, lambda t:t.tags, lambda t:t.priority]
-    labels = ['ID', 'Task', 'tags', 'Priority']
+    labels = ['ID', 'Task', 'Tags', 'Priority']
     lengths = [max(max(len(getter(t)) for t in tasks), len(label)) for getter, label in zip(getters, labels)]
-    
     table  = '\n\n'
+    
     # top boarder
-    table += '╔'
-    for length, ending in zip(lengths, ['╤', '╤', '╤', '╗\n']):
-        table += ''.ljust(length, '═') + ending
+    table += make_row('╔', lengths, '═', ['╤', '╤', '╤', '╗'])
+    
     # column labels
     table += '║'
     for label, length, ending in zip(labels, lengths, ['│', '│', '│', '║\n']):
         table += label.center(length) + ending
+    
     # label/item separator
-    table += '╠'
-    for length, ending in zip(lengths, ['╪', '╪', '╪', '╣\n']):
-        table += ''.ljust(length, '═') + ending
+    table += make_row('╠', lengths, '═', ['╪', '╪', '╪', '╣'])
+    
     # task entries
     for index, task in enumerate(tasks, start=1):
         table += '║'
@@ -125,15 +135,12 @@ def table_ify(tasks, divide_every=0):
             table += getter(task).ljust(length) + ending
         # divider for readability
         if divide_every and not (index % divide_every) and len(tasks) != index:
-            table += '╟'
-            for length, ending in zip(lengths, ['┼', '┼', '┼', '╢\n']):
-                table += ''.ljust(length, '─') + ending
+            table += make_row('╟', lengths, '─', ['┼', '┼', '┼', '╢'])
+            
     # bottom boarder
-    table += '╙'
-    for length, ending in zip(lengths, ['┴', '┴', '┴', '╜']):
-        table += ''.ljust(length, '─') + ending
-
-    return table + '\n'
+    table += make_row('╚', lengths, '═', ['╧', '╧', '╧', '╝\n'])
+    
+    return table
 
 
 if __name__ == '__main__':
